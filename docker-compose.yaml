@@ -1,0 +1,53 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5001"
+#    volumes:
+#      - ./media/images/uploads:/app/media/images/uploads
+    depends_on:
+      - db
+    environment:
+      - FLASK_APP=${FLASK_APP}
+      - POSTGRESQL_URL=${POSTGRESQL_URL}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+    command: [ "bash", "-c", "flask db upgrade && uwsgi --ini uwsgi.ini"]
+    networks:
+      - app
+
+  db:
+    # образ, используемый для контейнера
+    image: postgres:14-alpine
+    # переменные окружения для БД
+    container_name: ${DB_HOST}
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+        - app
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:4.25
+    environment:
+      - "PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}"
+      - "PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}"
+      - "PGADMIN_LISTEN_PORT=${PGADMIN_LISTEN_PORT}"
+    ports:
+      - "${PGADMIN_USER_PORT}:${PGADMIN_LISTEN_PORT}"
+    #restart: always
+    networks:
+        - app
+networks:
+  app:
+    driver: bridge
