@@ -2,25 +2,27 @@ version: '3.9'
 
 services:
   app:
+    user: "${USER_UID}:${USER_GID}"
     build:
       context: "."
       args:
         - MIGRATION=upgrade
-#        todo
+      #        todo обсудить так нормально ?
       dockerfile: Dockerfile
     ports:
       - "5001:5001"
     depends_on:
-            db:
-              condition: service_healthy
+      db:
+        condition: service_healthy
     environment:
       - FLASK_APP=${FLASK_APP}
       - POSTGRESQL_URL=${POSTGRESQL_URL}
-#    command: [ "bash", "-c", "sleep 15 && flask db upgrade && uwsgi --ini uwsgi.ini" ]
-#    command: [ "bash", "-c", "flask db upgrade && uwsgi --ini uwsgi.ini" ]
+    #    command: [ "bash", "-c", "sleep 15 && flask db upgrade && uwsgi --ini uwsgi.ini" ]
+    #    command: [ "bash", "-c", "flask db upgrade && uwsgi --ini uwsgi.ini" ]
     networks:
       - app
 
+  #todo как лучше использовать бд без рута или добавить папку data в .dockerignore ?
   db:
     # образ, используемый для контейнера
     image: postgres:14-alpine
@@ -32,7 +34,7 @@ services:
     volumes:
       - ./data/postgresql:/var/lib/postgresql/data
     healthcheck:
-#      test: [ "CMD-SHELL", "pg_isready -U worker" ]
+      #      test: [ "CMD-SHELL", "pg_isready -U worker" ]
       test: [ "CMD-SHELL", "pg_isready -d app" ]
       interval: 5s
       timeout: 5s

@@ -32,6 +32,6 @@ docker images -a | grep "pattern" | awk '{none}' | xargs docker rmi
 docker image prune -a --filter "dangling=true"
 docker images -f dangling=true
 docker exec -it postgresql psql -d worker -U worker
-psql -h db -U worker -d 
+psql -h db -U worker -d worker
 \d user
 SELECT * FROM user;
