@@ -3,7 +3,10 @@ version: '3.9'
 services:
   app:
     build:
-      context: .
+      context: "."
+      args:
+        - MIGRATION=upgrade
+#        todo
       dockerfile: Dockerfile
     ports:
       - "5001:5001"
@@ -14,8 +17,7 @@ services:
       - FLASK_APP=${FLASK_APP}
       - POSTGRESQL_URL=${POSTGRESQL_URL}
 #    command: [ "bash", "-c", "sleep 15 && flask db upgrade && uwsgi --ini uwsgi.ini" ]
-#todo  проверку есть ли бд таблица user
-    command: [ "bash", "-c", "flask db upgrade && uwsgi --ini uwsgi.ini" ]
+#    command: [ "bash", "-c", "flask db upgrade && uwsgi --ini uwsgi.ini" ]
     networks:
       - app
 

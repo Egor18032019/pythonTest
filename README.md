@@ -31,3 +31,7 @@ curl -i -X GET http://127.0.0.1:5001/api/user
 docker images -a | grep "pattern" | awk '{none}' | xargs docker rmi
 docker image prune -a --filter "dangling=true"
 docker images -f dangling=true
+docker exec -it postgresql psql -d worker -U worker
+psql -h db -U worker -d 
+\d user
+SELECT * FROM user;
